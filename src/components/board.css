@@ -1,0 +1,32 @@
+.boardWrapper {
+    width: 50%;
+    margin: auto;
+    display: flex;
+    justify-content: center;
+}
+
+.randomize {
+    height: 2em;
+    align-self: center;
+}
+
+.board {
+    display: grid;
+    grid-template-columns: repeat(29, auto) 1fr;
+    grid-template-rows: repeat(30,auto) 1fr;
+    padding: 10px
+}
+
+.square {
+    height: 1em;
+    width: 1em;
+    border: 1px solid black;
+}
+
+.alive {
+    background-color: green;
+}
+
+.dead {
+    background-color: gray;
+}
