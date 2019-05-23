@@ -10,7 +10,7 @@ class Board extends React.Component {
                             () => [...Array(30)].fill(false)),
                     generation: 0,
                     isRunning: false,
-                    randomness: 0.5,
+                    randomness: 0.8,
                     intervalId: ''
                 };
 
@@ -38,7 +38,6 @@ class Board extends React.Component {
 
     };
 
-
     randomizeSeed() {
         let res = [...Array(30)].map(
             () => [...Array(30)].fill({})
@@ -46,7 +45,7 @@ class Board extends React.Component {
 
         for (let i = 0; i < res.length; i++) {
             for (let j = 0; j < res[0].length; j++) {
-                res[i][j] =  Math.random() > 0.5;
+                res[i][j] =  Math.random() > this.state.randomness;
             }
         };
 
@@ -88,7 +87,7 @@ class Board extends React.Component {
                     }
                 }
                 else {
-                    if(neighbors === 3){
+                    if (neighbors === 3){
                         nextGen[i][j] = true;
                     }
                 }
@@ -99,16 +98,6 @@ class Board extends React.Component {
             matrix: nextGen,
             generation: this.state.generation + 1});
     };
-
-    /* componentDidMount() {
-        this.intervalId = setInterval(
-            () => this.tick(),
-            200);
-    }; */
-
-    /* componentWillUnmount(){
-        clearInterval(this.intervalId);
-    }; */
 
     render() {
         return (
