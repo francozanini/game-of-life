@@ -1,6 +1,7 @@
 import React from 'react';
 import './board.css'
 import Clock from './clock';
+import Cell from './cell';
 class Board extends React.Component {
     constructor(props) {
         super(props);
@@ -8,33 +9,50 @@ class Board extends React.Component {
                   matrix: [...Array(30)].map(
                             () => [...Array(30)].fill(false)),
                     generation: 0,
-                    isRunning: true};
-        this.state.matrix[0][0] = true;
+                    isRunning: false,
+                    randomness: 0.5,
+                    intervalId: ''
+                };
 
-        this.getCells = this.getCells.bind(this);
+        this.tick = this.tick.bind(this);
+        this.startPause = this.startPause.bind(this);
         this.randomizeSeed = this.randomizeSeed.bind(this);
+        this.getNeighbors = this.getNeighbors.bind(this);
     };
+
+    startPause() {
+        const newState = this.state.isRunning ? false : true;
+        if (newState) {
+            this.setState({
+                intervalId: setInterval(
+                    this.tick,
+                    200),
+                isRunning: newState
+            })
+        }
+        else {
+            this.setState({
+                isRunning: newState});
+            clearInterval(this.state.intervalId);
+        }
+
+    };
+
 
     randomizeSeed() {
         let res = [...Array(30)].map(
             () => [...Array(30)].fill({})
                 );
 
-        for(let i = 0; i < res.length; i++) {
-            for(let j = 0; j < res[0].length; j++) {
-                res[i][j] =  Math.random() > 0.7
+        for (let i = 0; i < res.length; i++) {
+            for (let j = 0; j < res[0].length; j++) {
+                res[i][j] =  Math.random() > 0.5;
             }
         };
 
         this.setState({matrix: res,
-                        generation: 0});
-    };
-
-    getCells() {
-        return this.state.matrix.map((row, indexRow) => (
-            row.map(function(col, indexCol) {
-                return col ? <div key={`${indexRow}-${indexCol}`} className='square alive'/> :
-            <div key={`${indexRow}-${indexCol}`} className='square dead' />})));
+                        generation: 0,
+                        isRunning: true});
     };
 
     getNeighbors(row, col) {
@@ -61,7 +79,7 @@ class Board extends React.Component {
         for (let i = 0; i < 30; i++) {
             for (let j = 0; j < 30; j++) {
                 let neighbors = this.getNeighbors(i, j);
-                if(this.state.matrix[i][j]) {
+                if (this.state.matrix[i][j]) {
                     if(neighbors === 3 || neighbors === 2) {
                         nextGen[i][j] = true;
                     }
@@ -82,23 +100,33 @@ class Board extends React.Component {
             generation: this.state.generation + 1});
     };
 
-    componentDidMount() {
+    /* componentDidMount() {
         this.intervalId = setInterval(
             () => this.tick(),
-            1000);
-    };
+            200);
+    }; */
 
-    componentWillUnmount(){
+    /* componentWillUnmount(){
         clearInterval(this.intervalId);
-    };
+    }; */
 
     render() {
-        const cells = this.getCells();
-        return(
+        return (
             <div className='boardWrapper'>
-                <button className='randomize' onClick={this.randomizeSeed}>Randomize</button>
+                <div className='options'>
+                    <button className='option' onClick={this.randomizeSeed}>
+                        Randomize
+                    </button>
+                    <button onClick={this.startPause} className={'option'} >
+                        {this.state.isRunning ? 'Pause' : 'Start'}
+                    </button>
+                </div>
                 <div className='board'>
-                    {cells}
+                    {this.state.matrix.map((row, indexRow) =>
+                        row.map(
+                            (col, indexCol) => <Cell alive={col} key={indexRow + indexCol}/>
+                        )
+                    )}
                 </div>
                 <Clock generation={this.state.generation}/>
             </div>)

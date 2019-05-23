@@ -5,9 +5,18 @@
     justify-content: center;
 }
 
-.randomize {
-    height: 2em;
+.options {
     align-self: center;
+    display: flex;
+    flex-direction: column;
+
+}
+
+.option {
+    height: 2em;
+    display: inline-block;
+    align-self: stretch;
+    width: max-content;
 }
 
 .board {
@@ -15,18 +24,4 @@
     grid-template-columns: repeat(29, auto) 1fr;
     grid-template-rows: repeat(30,auto) 1fr;
     padding: 10px
-}
-
-.square {
-    height: 1em;
-    width: 1em;
-    border: 1px solid black;
-}
-
-.alive {
-    background-color: green;
-}
-
-.dead {
-    background-color: gray;
 }
