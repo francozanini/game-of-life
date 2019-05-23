@@ -5,9 +5,14 @@ import Cell from './cell';
 class Board extends React.Component {
     constructor(props) {
         super(props);
+
+        const rows = 30;
+        const cols = 30;
+
         this.state = {
-                  matrix: [...Array(30)].map(
-                            () => [...Array(30)].fill(false)),
+                  matrix: this.createNewMatrix(rows, cols),
+                    rows: rows,
+                    cols: cols,
                     generation: 0,
                     isRunning: false,
                     randomness: 0.8,
@@ -15,13 +20,16 @@ class Board extends React.Component {
                 };
 
         this.tick = this.tick.bind(this);
-        this.startPause = this.startPause.bind(this);
-        this.randomizeSeed = this.randomizeSeed.bind(this);
+        this.handleStartOrPause = this.handleStartOrPause.bind(this);
+        this.handleRandomization = this.handleRandomization.bind(this);
         this.getNeighbors = this.getNeighbors.bind(this);
+        this.createNewMatrix = this.createNewMatrix.bind(this);
+        this.handleCellToggle = this.handleCellToggle.bind(this);
     };
 
-    startPause() {
+    handleStartOrPause() {
         const newState = this.state.isRunning ? false : true;
+
         if (newState) {
             this.setState({
                 intervalId: setInterval(
@@ -34,14 +42,16 @@ class Board extends React.Component {
             this.setState({
                 isRunning: newState});
             clearInterval(this.state.intervalId);
-        }
-
+        };
     };
 
-    randomizeSeed() {
-        let res = [...Array(30)].map(
-            () => [...Array(30)].fill({})
-                );
+    createNewMatrix(rows, cols) {
+        return ([...Array(rows)].map(
+            () => [...Array(cols)].fill(false)));
+    }
+
+    handleRandomization() {
+        let res = this.createNewMatrix(this.state.rows, this.state.cols);
 
         for (let i = 0; i < res.length; i++) {
             for (let j = 0; j < res[0].length; j++) {
@@ -50,8 +60,7 @@ class Board extends React.Component {
         };
 
         this.setState({matrix: res,
-                        generation: 0,
-                        isRunning: true});
+                        generation: 0 });
     };
 
     getNeighbors(row, col) {
@@ -63,7 +72,10 @@ class Board extends React.Component {
             let y1 = row + dir[0];
             let x1 = col + dir[1];
 
-            if (x1 >= 0 && x1 < 30 && y1 >= 0 && y1 < 30 && this.state.matrix[y1][x1]) {
+            if (x1 >= 0 && x1 < this.state.rows &&
+                y1 >= 0 && y1 < this.state.cols &&
+                this.state.matrix[y1][x1])
+            {
                 neighbors++;
             }
         }
@@ -72,11 +84,10 @@ class Board extends React.Component {
     };
 
     tick() {
-        const nextGen = [...Array(30)].map(
-            () => [...Array(30)].fill(false));
+        const nextGen = this.createNewMatrix(this.state.rows, this.state.cols);
 
-        for (let i = 0; i < 30; i++) {
-            for (let j = 0; j < 30; j++) {
+        for (let i = 0; i < this.state.rows; i++) {
+            for (let j = 0; j < this.state.cols; j++) {
                 let neighbors = this.getNeighbors(i, j);
                 if (this.state.matrix[i][j]) {
                     if(neighbors === 3 || neighbors === 2) {
@@ -86,10 +97,8 @@ class Board extends React.Component {
                         nextGen[i][j] = false;
                     }
                 }
-                else {
-                    if (neighbors === 3){
+                else if (neighbors === 3) {
                         nextGen[i][j] = true;
-                    }
                 }
             };
         };
@@ -99,21 +108,30 @@ class Board extends React.Component {
             generation: this.state.generation + 1});
     };
 
+    handleCellToggle(e) {
+        const id = e.target.id;
+        const x = id.split('-')[0];
+        const y = id.split('-')[1];
+        const update = this.state.matrix;
+        update[x][y] = !this.state.matrix[x][y];
+        this.setState({matrix: update});
+    }
+
     render() {
         return (
             <div className='boardWrapper'>
                 <div className='options'>
-                    <button className='option' onClick={this.randomizeSeed}>
+                    <button className='option' onClick={this.handleRandomization}>
                         Randomize
                     </button>
-                    <button onClick={this.startPause} className={'option'} >
+                    <button onClick={this.handleStartOrPause} className={'option'} >
                         {this.state.isRunning ? 'Pause' : 'Start'}
                     </button>
                 </div>
                 <div className='board'>
-                    {this.state.matrix.map((row, indexRow) =>
+                    {this.state.matrix.map((row, x) =>
                         row.map(
-                            (col, indexCol) => <Cell alive={col} key={indexRow + indexCol}/>
+                            (col, y) => <Cell id={x + '-' + y} onClick={this.handleCellToggle} alive={col} key={x + y}/>
                         )
                     )}
                 </div>
