@@ -63,7 +63,6 @@ class Board extends React.Component {
                 let neighbors = this.getNeighbors(i, j);
                 if(this.state.matrix[i][j]) {
                     if(neighbors === 3 || neighbors === 2) {
-                        console.log(neighbors);
                         nextGen[i][j] = true;
                     }
                     else {
