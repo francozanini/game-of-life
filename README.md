@@ -9,7 +9,7 @@ Those rules are: <br>
 
 ### How to check it
 
-This project is live at Github Pages<>. One can also clone this repo and run `npm start` in the main folder to start a dev server.
+This project is live at [Github Pages](https://francozanini.github.io/game-of-life/). One can also clone this repo and run `npm start` in the main folder to start a dev server.
 
 ### Improvements
 There are still many features to add and ways to improve both the quality of the code and the final product. <br>
